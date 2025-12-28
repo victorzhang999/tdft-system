@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Fingerprint, Activity, Zap, Shield, BookOpen, Send, X, Atom, Sparkles, Cpu, Globe } from 'lucide-react';
+// 只保留核心图标，确保稳定
+import { Fingerprint, Activity, Zap, Shield, BookOpen, Send, Atom, Sparkles, Cpu, Globe, Search } from 'lucide-react';
 
-// --- 1. 星空特效组件 (已做防崩处理) ---
+// --- 1. 星空特效组件 (防崩优化版) ---
 const Starfield = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -14,7 +15,7 @@ const Starfield = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // 设置画布大小
+    // 动态调整画布大小
     const setSize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -24,7 +25,7 @@ const Starfield = () => {
 
     // 粒子参数
     const particles: {x: number, y: number, size: number, speed: number, opacity: number}[] = [];
-    const count = 100; // 粒子数量
+    const count = 80; // 粒子数量适中，减少手机发热
 
     // 初始化粒子
     for (let i = 0; i < count; i++) {
@@ -33,7 +34,7 @@ const Starfield = () => {
         y: Math.random() * canvas.height,
         size: Math.random() * 2,
         speed: Math.random() * 0.5 + 0.1,
-        opacity: Math.random()
+        opacity: Math.random() * 0.8 + 0.2
       });
     }
 
@@ -114,6 +115,7 @@ export default function EntropyPage() {
 
   if (!mounted) return <div className="min-h-screen bg-black" />;
 
+  // 动态颜色
   const getProbabilityColor = (score: number) => {
     if (score >= 75) return 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.5)]';
     if (score >= 40) return 'bg-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.5)]';
@@ -123,18 +125,18 @@ export default function EntropyPage() {
   return (
     <main className="min-h-screen bg-[#050505] text-white font-sans flex flex-col items-center justify-center p-4 relative overflow-hidden">
       
-      {/* 背景特效 */}
+      {/* 1. 背景特效 (已恢复) */}
       <Starfield />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black z-0 pointer-events-none" />
 
-      {/* 顶部 HUD */}
+      {/* 2. 顶部 HUD */}
       <div className="absolute top-6 left-6 flex flex-col gap-1 z-10 opacity-70">
          <div className="flex items-center gap-2 text-[10px] text-cyan-400 font-mono tracking-widest border border-cyan-900/50 px-2 py-1 rounded bg-black/50 backdrop-blur">
-            <Globe size={10}/> TDFT-SYSTEM v7.0
+            <Globe size={10}/> TDFT-SYSTEM v7.0 STABLE
          </div>
       </div>
 
-      {/* 说明书按钮 */}
+      {/* 3. 说明书按钮 */}
       <button 
         onClick={() => setShowManual(true)}
         className="fixed top-6 right-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900/80 border border-zinc-700/50 text-xs font-bold text-zinc-300 hover:text-white hover:border-cyan-500/50 transition-all backdrop-blur"
@@ -170,12 +172,13 @@ export default function EntropyPage() {
 
       <div className="z-10 w-full max-w-xl flex flex-col items-center gap-10">
         
+        {/* ==================== 状态：空闲 ==================== */}
         {status === 'idle' && (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full space-y-8 text-center px-2">
              
              {/* 标题：纯白高亮 + 强发光 */}
              <div className="relative">
-                <h1 className="text-5xl md:text-6xl font-black tracking-widest text-white drop-shadow-[0_0_35px_rgba(255,255,255,0.5)]">
+                <h1 className="text-5xl md:text-6xl font-black tracking-widest text-white drop-shadow-[0_0_35px_rgba(255,255,255,0.6)]">
                     决策推演
                 </h1>
                 <div className="mt-4 flex justify-center gap-6 text-[10px] font-bold tracking-[0.4em] text-cyan-400/80 uppercase">
@@ -193,7 +196,7 @@ export default function EntropyPage() {
                           <div className="w-16 h-12 flex items-center justify-center text-cyan-400 border-r border-zinc-800 font-bold text-xs shrink-0 bg-zinc-900/50 rounded-l">
                              现状
                           </div>
-                          <input type="text" value={q1} onChange={(e) => setQ1(e.target.value)} placeholder="你现在的困境..." className="w-full bg-transparent p-3 text-white placeholder:text-zinc-600 outline-none font-medium" />
+                          <input type="text" value={q1} onChange={(e) => setQ1(e.target.value)} placeholder="你现在的困境..." className="w-full bg-transparent p-3 text-white placeholder:text-zinc-600 outline-none font-medium text-base" />
                       </div>
                   </div>
 
@@ -204,7 +207,7 @@ export default function EntropyPage() {
                           <div className="w-16 h-12 flex items-center justify-center text-purple-400 border-r border-zinc-800 font-bold text-xs shrink-0 bg-zinc-900/50 rounded-l">
                              方案
                           </div>
-                          <input type="text" value={q2} onChange={(e) => setQ2(e.target.value)} placeholder="你想怎么做..." className="w-full bg-transparent p-3 text-white placeholder:text-zinc-600 outline-none font-medium" />
+                          <input type="text" value={q2} onChange={(e) => setQ2(e.target.value)} placeholder="你想怎么做..." className="w-full bg-transparent p-3 text-white placeholder:text-zinc-600 outline-none font-medium text-base" />
                       </div>
                   </div>
 
@@ -215,12 +218,12 @@ export default function EntropyPage() {
                           <div className="w-16 h-12 flex items-center justify-center text-emerald-400 border-r border-zinc-800 font-bold text-xs shrink-0 bg-zinc-900/50 rounded-l">
                              约束
                           </div>
-                          <input type="text" value={q3} onChange={(e) => setQ3(e.target.value)} placeholder="最坏的结果..." className="w-full bg-transparent p-3 text-white placeholder:text-zinc-600 outline-none font-medium" />
+                          <input type="text" value={q3} onChange={(e) => setQ3(e.target.value)} placeholder="最坏的结果..." className="w-full bg-transparent p-3 text-white placeholder:text-zinc-600 outline-none font-medium text-base" />
                       </div>
                   </div>
               </div>
 
-              <button onClick={startAnalysis} className="group relative w-full py-5 bg-white text-black font-black text-lg tracking-widest rounded-xl hover:scale-[1.02] transition-transform shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+              <button onClick={startAnalysis} className="group relative w-full py-5 bg-white text-black font-black text-lg tracking-widest rounded-xl hover:scale-[1.02] transition-transform shadow-[0_0_30px_rgba(255,255,255,0.4)]">
                  <div className="flex items-center justify-center gap-3">
                     <Fingerprint className="group-hover:text-purple-600 transition-colors" size={24}/> 
                     启动推演程序
@@ -229,6 +232,7 @@ export default function EntropyPage() {
           </motion.div>
         )}
 
+        {/* ==================== 状态：计算中 ==================== */}
         {status === 'analyzing' && (
            <div className="flex flex-col items-center gap-8 py-20">
               <div className="relative w-32 h-32">
@@ -243,6 +247,7 @@ export default function EntropyPage() {
            </div>
         )}
 
+        {/* ==================== 状态：结果 ==================== */}
         {status === 'result' && result && (
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full space-y-6 pb-20">
               
