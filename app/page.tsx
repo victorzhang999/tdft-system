@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// 移除了可能导致报错的生僻图标，保留最稳健的基础图标
-import { Fingerprint, RotateCcw, Activity, Zap, Shield, GitGraph, BookOpen, Send, X, Atom, Microscope, Layers, Cpu, Globe, Search, ChevronRight, FileText } from 'lucide-react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, PolarRadiusAxis, RadarProps } from 'recharts';
+import { Fingerprint, RotateCcw, Activity, Zap, Shield, GitGraph, BookOpen, Send, X, Atom, Microscope, Globe, Search, Cpu } from 'lucide-react';
+// 修复：补全 PolarRadiusAxis，移除重复的 Radar
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, PolarRadiusAxis } from 'recharts';
 
 // --- 组件：高亮粒子星空 ---
 const Starfield = () => {
@@ -44,7 +44,6 @@ const Starfield = () => {
         if (p.y > height) p.y = 0;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        // 注意：这里使用了反引号
         ctx.fillStyle = `rgba(103, 232, 249, ${p.alpha})`;
         ctx.fill();
       });
@@ -74,6 +73,7 @@ export default function EntropyPage() {
   const [q2, setQ2] = useState('');
   const [q3, setQ3] = useState('');
   const [supplement, setSupplement] = useState('');
+  // 修复：保留 historyContext 供后续扩展，或暂时移除未使用警告
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [historyContext, setHistoryContext] = useState('');
 
@@ -101,7 +101,7 @@ export default function EntropyPage() {
   const submitSupplement = async () => {
     if (!supplement.trim()) return;
     setStatus('analyzing');
-    // 注意：这里使用 historyContext 可能会有闭包问题，简化处理
+    // 简化处理，直接使用当前输入作为上下文
     await fetchAnalysis(supplement, `【现状】：${q1}\n【选项】：${q2}\n【边界】：${q3}`);
     setSupplement('');
   };
@@ -120,7 +120,7 @@ export default function EntropyPage() {
       setStatus('result');
     } catch (error) {
       console.error(error);
-      alert("⚠️ 连接中断：无法连接至推演中枢。请检查网络或 API Key。");
+      alert("⚠️ 连接中断：请检查网络或 API Key。");
       setStatus('idle');
     }
   };
@@ -148,7 +148,7 @@ export default function EntropyPage() {
       
       {/* 左上角 HUD */}
       <div className="absolute top-6 left-8 text-[10px] text-cyan-800 flex flex-col gap-2 z-0 pointer-events-none select-none hidden md:flex font-mono font-bold tracking-widest">
-        <span className="flex items-center gap-2"><Globe size={12}/> TDFT-SYSTEM v5.8 STABLE</span>
+        <span className="flex items-center gap-2"><Globe size={12}/> TDFT-SYSTEM v6.0 FIXED</span>
         <span className="flex items-center gap-2"><Cpu size={12}/> CORE: ONLINE</span>
       </div>
 
@@ -160,7 +160,7 @@ export default function EntropyPage() {
         <BookOpen size={14}/> 系统原理
       </button>
 
-      {/* --- 理论说明书弹窗 (修复版) --- */}
+      {/* --- 理论说明书弹窗 (精简稳定版) --- */}
       <AnimatePresence>
         {showManual && (
           <motion.div 
@@ -173,127 +173,18 @@ export default function EntropyPage() {
               className="bg-[#080808] border border-cyan-900/30 w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-xl shadow-[0_0_60px_rgba(6,182,212,0.15)] custom-scrollbar flex flex-col"
               onClick={e => e.stopPropagation()}
             >
-              <div className="sticky top-0 z-10 bg-[#080808]/95 backdrop-blur border-b border-white/5 p-8 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-cyan-900/20 rounded border border-cyan-500/30">
-                        <FileText className="text-cyan-400" size={24}/>
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-bold text-white tracking-widest font-sans">
-                        热力学决策场论 (TDFT)
-                        </h2>
-                        <p className="text-xs text-zinc-500 font-mono tracking-wider mt-1">DOC. REF: TDFT-2025-WP-STABLE</p>
-                    </div>
-                </div>
-                <button onClick={() => setShowManual(false)} className="text-zinc-500 hover:text-white p-2 hover:bg-white/5 rounded-full transition-colors"><X size={24}/></button>
+              <div className="sticky top-0 z-10 bg-[#080808]/95 backdrop-blur border-b border-white/5 p-6 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-white tracking-widest">TDFT 技术白皮书</h2>
+                <button onClick={() => setShowManual(false)}><X className="text-zinc-500" size={24}/></button>
               </div>
-              
-              <div className="p-10 md:p-16 text-gray-300 font-sans selection:bg-cyan-500/30">
-                <div className="text-center mb-16 border-b border-white/5 pb-10">
-                    <h1 className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight leading-tight">
-                        不确定性环境下人类战略决策的<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">非平衡相变模型</span>
-                    </h1>
-                    <p className="text-lg text-zinc-500 font-serif italic mt-6">
-                        Thermodynamic Decision Field Theory: A Non-Equilibrium Phase Transition Model
-                    </p>
+              <div className="p-8 text-gray-300 font-sans space-y-8">
+                <h1 className="text-2xl font-bold text-white">热力学决策场论 (TDFT)</h1>
+                <p className="text-base text-gray-400">
+                    本系统基于非平衡态热力学，将决策过程建模为能量跃迁。通过计算熵值(Entropy)、激活能(Activation Energy)和鲁棒性(Robustness)，量化决策成功率。
+                </p>
+                <div className="border-t border-zinc-800 pt-6">
+                    <button onClick={() => setShowManual(false)} className="w-full py-3 bg-cyan-900/30 text-cyan-200 rounded font-bold border border-cyan-700/30">关闭 (CLOSE)</button>
                 </div>
-
-                <div className="bg-zinc-900/40 border-l-4 border-cyan-500 p-8 rounded-r-xl mb-16">
-                    <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                         Abstract // 摘要
-                    </h3>
-                    <p className="text-lg text-gray-300 leading-9 text-justify">
-                        传统决策模型（如期望效用理论、SWOT分析）通常基于线性假设和静态环境，难以有效处理高熵环境下的非线性动态博弈。本文提出了一种基于复杂系统科学的新型决策框架——<strong>热力学决策场论（TDFT）</strong>。该理论建立在物理学与决策科学的同构性之上，将决策过程建模为相空间中的能量跃迁过程。通过引入<strong>信息熵 (S)</strong>、<strong>激活能 (Ea)</strong> 和 <strong>鲁棒性 (R)</strong> 三个核心序参量，定量描述决策系统的混乱度、势能壁垒及抗扰动能力。模型推演表明，最优决策路径实际上是在多维势能面上寻找局部熵减解与吉布斯自由能最小化的过程。
-                    </p>
-                </div>
-
-                <div className="space-y-16 max-w-4xl mx-auto">
-                    <section>
-                        <h3 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                            <span className="text-cyan-500/50 font-mono">01.</span> 引言 (Introduction)
-                        </h3>
-                        <p className="text-lg text-gray-400 leading-8 text-justify">
-                            在后现代社会的复杂环境中，个体与组织面临的决策环境呈现出高度的随机性（Stochasticity）和非线性（Non-linearity）。传统的理性人假设（Rational Agent）在面对“黑天鹅”事件和信息过载时往往失效。西蒙（Herbert Simon）的有限理性理论虽然指出了认知局限，但缺乏定量的动力学描述。
-                            <br/><br/>
-                            近年来，经济物理学的发展为理解社会行为提供了新的视角。本文提出的 TDFT 旨在利用统计力学和耗散结构理论的数学工具，构建一个能够量化“迷茫”、“阻力”与“风险”的动态模型，从而辅助决策者在混沌系统中锁定大概率成功路径（Attractor）。
-                        </p>
-                    </section>
-
-                    <section>
-                        <h3 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
-                            <span className="text-cyan-500/50 font-mono">02.</span> 理论框架 (Theoretical Framework)
-                        </h3>
-                        
-                        <div className="mb-10">
-                            <h4 className="text-xl font-bold text-cyan-400 mb-4 flex items-center gap-2">
-                                <GitGraph size={20}/> 第一定律：决策熵与信息不确定性
-                            </h4>
-                            <div className="bg-black/40 border border-zinc-800 p-6 rounded-lg mb-4">
-                                <p className="text-sm font-mono text-cyan-200 mb-2 opacity-80">玻尔兹曼方程 (Boltzmann Equation)</p>
-                                <p className="text-2xl font-serif text-white tracking-wider">S = k<sub>B</sub> · lnΩ</p>
-                            </div>
-                            <p className="text-lg text-gray-400 leading-8 text-justify">
-                                在决策场中，我们将 Ω 定义为<strong>“未来可能演化路径的微观状态总数”</strong>。当决策者面临的变量越多、约束条件越少、信息越模糊时，Ω 趋向无穷大，导致系统熵值 S 激增。
-                                <br/>
-                                <strong className="text-white">高熵态 (High Entropy)</strong>：系统处于布朗运动状态，决策向量随机震荡。此时系统的首要任务并非“位移”（行动），而是“降温”（获取信息以降低 Ω）。
-                            </p>
-                        </div>
-
-                        <div className="mb-10">
-                            <h4 className="text-xl font-bold text-yellow-400 mb-4 flex items-center gap-2">
-                                <Zap size={20}/> 第二定律：激活能与势能壁垒
-                            </h4>
-                            <div className="bg-black/40 border border-zinc-800 p-6 rounded-lg mb-4">
-                                <p className="text-sm font-mono text-yellow-200 mb-2 opacity-80">阿伦尼乌斯方程 (Arrhenius Equation)</p>
-                                <p className="text-2xl font-serif text-white tracking-wider">P ∝ A · e<sup>(-E<sub>a</sub> / kT)</sup></p>
-                            </div>
-                            <p className="text-lg text-gray-400 leading-8 text-justify">
-                                借鉴化学反应动力学，任何社会状态的改变（如创业、转型）都可视为一次“化学反应”。<strong>E<sub>a</sub> (Activation Energy)</strong> 代表打破旧有平衡所需的最小能量阈值，包括资金成本、认知重构成本、社会关系重组成本等。若势能壁垒远高于能量储备，反应不仅无法发生，强行跃迁还将导致系统耗散崩溃。
-                            </p>
-                        </div>
-
-                        <div className="mb-10">
-                            <h4 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
-                                <Shield size={20}/> 第三定律：鲁棒性与李雅普诺夫稳定性
-                            </h4>
-                            <div className="bg-black/40 border border-zinc-800 p-6 rounded-lg mb-4">
-                                <p className="text-sm font-mono text-emerald-200 mb-2 opacity-80">稳定性判据 (Stability Criterion)</p>
-                                <p className="text-xl font-serif text-white tracking-wider">||x(t) - x<sub>e</sub>|| &lt; ε, ∀t ≥ 0</p>
-                            </div>
-                            <p className="text-lg text-gray-400 leading-8 text-justify">
-                                决策不仅是追求收益最大化，更是追求生存概率最大化。<strong>鲁棒性 (Robustness)</strong> 度量的是系统能够承受的最大外部扰动而不发生结构性坍塌的能力。低鲁棒性系统处于<strong>“亚稳态” (Metastable State)</strong>——看似平衡，但微小的扰动（如资金链断裂）即可引发灾难性的相变。
-                            </p>
-                        </div>
-                    </section>
-
-                    <section>
-                        <h3 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                            <span className="text-cyan-500/50 font-mono">03.</span> 映射机制 (Mapping Mechanism)
-                        </h3>
-                        <p className="text-lg text-gray-400 leading-8 text-justify mb-6">
-                            基于上述理论，本系统构建了一个从自然语言输入到高维向量空间的映射机制：
-                        </p>
-                        <ul className="space-y-4 text-lg text-gray-400 list-disc pl-6">
-                            <li><strong className="text-white">输入解析 (Parsing)</strong>：利用语义编码器将自然语言分解为三组特征向量：现状向量、路径向量、边界向量。</li>
-                            <li><strong className="text-white">蒙特卡洛模拟 (Simulation)</strong>：在相空间中进行 N 次 ($N \ge 10^4$) 随机游走模拟。每一次模拟引入随机扰动项，模拟未来可能的演化轨迹。</li>
-                            <li><strong className="text-white">成功率坍缩 (Collapse)</strong>：最终的推荐指数并非简单的加权平均，而是基于木桶效应的非线性函数。当任一指标处于极端劣势时，整体成功率将迅速坍缩至低值。</li>
-                        </ul>
-                    </section>
-
-                    <div className="border-t border-zinc-800 pt-10 mt-10">
-                        <h4 className="text-sm text-zinc-500 uppercase tracking-widest mb-4">Conclusion // 结论</h4>
-                        <p className="text-xl text-gray-200 font-medium leading-9">
-                            "TDFT 模型的创新之处在于它打破了社会科学与自然科学的界限。它不再依赖主观的经验主义判断，而是提供了一套客观的、可量化的物理标尺，引导决策者寻找‘低熵-低能耗-高稳态’的最优解。"
-                        </p>
-                    </div>
-
-                </div>
-              </div>
-              
-              <div className="sticky bottom-0 bg-[#050505]/95 backdrop-blur p-6 border-t border-white/10 text-center">
-                <button onClick={() => setShowManual(false)} className="px-16 py-4 bg-cyan-900/30 hover:bg-cyan-800/50 text-cyan-200 rounded-lg font-bold transition-all text-sm tracking-[0.2em] border border-cyan-700/30 hover:border-cyan-500/50 shadow-lg">
-                  关闭档案 (CLOSE)
-                </button>
               </div>
             </motion.div>
           </motion.div>
@@ -311,10 +202,11 @@ export default function EntropyPage() {
             <div className="text-center space-y-6 relative">
               <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none"></div>
               
-              <h1 className="text-4xl md:text-7xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-cyan-300 drop-shadow-[0_0_35px_rgba(34,211,238,0.8)] font-sans px-2 leading-tight">
+              {/* 标题强制高亮 */}
+              <h1 className="text-5xl md:text-7xl font-black tracking-widest text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.6)] font-sans px-2 leading-tight">
                 热力学决策场论
               </h1>
-              <div className="flex items-center justify-center gap-4 md:gap-6 text-xs md:text-base tracking-[0.5em] text-cyan-400 font-bold uppercase opacity-90">
+              <div className="flex items-center justify-center gap-4 text-sm md:text-base tracking-[0.3em] text-cyan-300 font-bold uppercase">
                  <span>复杂系统</span>
                  <span className="w-1.5 h-1.5 bg-cyan-200 rounded-full animate-pulse"></span>
                  <span>动力学推演</span>
@@ -325,72 +217,59 @@ export default function EntropyPage() {
               
               {/* 输入框 1 */}
               <div className="relative group w-full">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
-                <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-cyan-400/50 group-focus-within:border-cyan-300 group-focus-within:bg-cyan-950/20">
-                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-cyan-400 tracking-wider group-focus-within:text-cyan-200 transition-colors shrink-0">
+                <div className="relative bg-[#080808]/90 border border-zinc-700 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 focus-within:border-cyan-400 focus-within:shadow-[0_0_20px_rgba(34,211,238,0.5)]">
+                    <div className="h-full w-20 md:w-32 bg-zinc-900 border-r border-zinc-700 flex items-center justify-center text-xs md:text-sm font-bold text-cyan-300 tracking-wider shrink-0">
                         初始状态
                     </div>
                     <input
                       type="text"
                       value={q1} onChange={(e) => setQ1(e.target.value)}
-                      placeholder="困境、焦虑或现状..."
-                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-500 outline-none font-sans h-full tracking-wide min-w-0 font-medium"
+                      placeholder="你的困境或现状..."
+                      className="flex-grow bg-transparent px-4 text-base text-white placeholder:text-zinc-500 outline-none font-sans h-full tracking-wide min-w-0"
                     />
-                    <div className="pr-4 text-cyan-400 opacity-50 group-focus-within:opacity-100 group-focus-within:text-cyan-300 transition-all hidden md:block">
-                        <Layers size={20}/>
-                    </div>
                 </div>
               </div>
 
               {/* 输入框 2 */}
               <div className="relative group w-full">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
-                <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-purple-400/50 group-focus-within:border-purple-300 group-focus-within:bg-purple-950/20">
-                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-purple-400 tracking-wider group-focus-within:text-purple-200 transition-colors shrink-0">
+                <div className="relative bg-[#080808]/90 border border-zinc-700 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 focus-within:border-purple-400 focus-within:shadow-[0_0_20px_rgba(192,132,252,0.5)]">
+                    <div className="h-full w-20 md:w-32 bg-zinc-900 border-r border-zinc-700 flex items-center justify-center text-xs md:text-sm font-bold text-purple-300 tracking-wider shrink-0">
                         决策变量
                     </div>
                     <input
                       type="text"
                       value={q2} onChange={(e) => setQ2(e.target.value)}
-                      placeholder="方案A、方案B... (选填)"
-                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-500 outline-none font-sans h-full tracking-wide min-w-0 font-medium"
+                      placeholder="方案A、方案B..."
+                      className="flex-grow bg-transparent px-4 text-base text-white placeholder:text-zinc-500 outline-none font-sans h-full tracking-wide min-w-0"
                     />
-                    <div className="pr-4 text-purple-400 opacity-50 group-focus-within:opacity-100 group-focus-within:text-purple-300 transition-all hidden md:block">
-                        <GitGraph size={20}/>
-                    </div>
                 </div>
               </div>
 
               {/* 输入框 3 */}
               <div className="relative group w-full">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-400 to-green-400 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
-                <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-emerald-400/50 group-focus-within:border-emerald-300 group-focus-within:bg-emerald-950/20">
-                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-emerald-400 tracking-wider group-focus-within:text-emerald-200 transition-colors shrink-0">
+                <div className="relative bg-[#080808]/90 border border-zinc-700 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 focus-within:border-emerald-400 focus-within:shadow-[0_0_20px_rgba(52,211,153,0.5)]">
+                    <div className="h-full w-20 md:w-32 bg-zinc-900 border-r border-zinc-700 flex items-center justify-center text-xs md:text-sm font-bold text-emerald-300 tracking-wider shrink-0">
                         系统约束
                     </div>
                     <input
                       type="text"
                       value={q3} onChange={(e) => setQ3(e.target.value)}
-                      placeholder="底线、最坏打算... (选填)"
-                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-500 outline-none font-sans h-full tracking-wide min-w-0 font-medium"
+                      placeholder="底线、最坏打算..."
+                      className="flex-grow bg-transparent px-4 text-base text-white placeholder:text-zinc-500 outline-none font-sans h-full tracking-wide min-w-0"
                     />
-                    <div className="pr-4 text-emerald-400 opacity-50 group-focus-within:opacity-100 group-focus-within:text-emerald-300 transition-all hidden md:block">
-                        <Shield size={20}/>
-                    </div>
                 </div>
               </div>
             </div>
 
             <button 
               onClick={startAnalysis}
-              className="group relative w-full md:w-3/4 h-16 mt-8 overflow-hidden bg-cyan-950/40 border border-cyan-500/40 cursor-pointer hover:bg-cyan-900/60 transition-all duration-500 rounded-lg shadow-[0_0_25px_rgba(6,182,212,0.2)] hover:shadow-[0_0_50px_rgba(6,182,212,0.5)] hover:border-cyan-400"
+              className="group relative w-full md:w-3/4 h-16 mt-8 overflow-hidden bg-cyan-900/50 border border-cyan-400/50 hover:bg-cyan-800 hover:border-cyan-300 transition-all duration-300 rounded-lg shadow-[0_0_25px_rgba(6,182,212,0.3)]"
             >
               <div className="flex items-center justify-center gap-3 h-full relative z-10">
-                <Fingerprint className="text-cyan-400 animate-pulse group-hover:text-cyan-200" size={22}/>
-                <span className="text-base font-bold tracking-[0.4em] text-cyan-100 group-hover:text-white transition-all">
-                  启动推演程序
+                <Fingerprint className="text-cyan-300 animate-pulse" size={24}/>
+                <span className="text-lg font-bold tracking-[0.3em] text-white">
+                  启动推演
                 </span>
-                <ChevronRight className="text-cyan-700 group-hover:translate-x-2 transition-transform opacity-50 group-hover:opacity-100 group-hover:text-cyan-200"/>
               </div>
             </button>
           </motion.div>
@@ -512,7 +391,7 @@ export default function EntropyPage() {
                     type="text" 
                     value={supplement}
                     onChange={(e) => setSupplement(e.target.value)}
-                    placeholder="输入修正参数以校准模型..."
+                    placeholder="输入修正参数..."
                     className="flex-grow bg-transparent p-4 text-sm text-white outline-none font-mono placeholder:text-zinc-600"
                     onKeyDown={(e) => e.key === 'Enter' && submitSupplement()}
                   />
