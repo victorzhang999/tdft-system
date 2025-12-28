@@ -2,17 +2,37 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.DEEPSEEK_API_KEY;
-    if (!apiKey) return NextResponse.json({ error: 'API Key missing' }, { status: 500 });
-
     const { userQuestion, context } = await req.json();
 
-    // 构建提示词：如果是补充信息，就加上前文
-    const userContent = context 
-      ? `【背景信息】：${context}\n\n【用户补充的新信息】：${userQuestion}\n\n请结合新信息重新修正推演结果。`
-      : userQuestion;
+    const apiKey = process.env.DEEPSEEK_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'API Key missing' }, { status: 500 });
+    }
 
-    const response = await fetch('https://api.deepseek.com/chat/completions', {
+    const systemPrompt = `
+      你是一个基于“热力学决策场论(TDFT)”的高维决策分析系统。
+      你的任务是根据用户的现状、方案和约束，计算成功的概率，并提供专业的物理学分析。
+
+      请严格按照以下 JSON 格式返回数据（不要包含任何 markdown 格式，只返回纯 JSON）：
+      {
+        "probability_score": 0-100之间的整数,
+        "conclusion": "这里用高度学术化、物理学术语（如熵增、势能壁垒、相变、吸引子）进行的严谨分析，字数100字左右。",
+        "vernacular": "这里是【大白话版本】：用通俗易懂的语言（比如比喻成开车、盖房子、谈恋爱）翻译上面的结论。要一针见血，直白甚至带点犀利，告诉用户到底行不行，字数100字左右。",
+        "suggestion": "这里提供3条具体的行动建议。"
+      }
+
+      评分标准：
+      - 0-40分：高风险，系统处于高熵态，建议放弃或彻底重构。
+      - 40-75分：中等风险，处于亚稳态，需要注入大量激活能（资源/努力）。
+      - 75-100分：推荐，系统处于低熵稳态，势能壁垒已突破。
+    `;
+
+    const userPrompt = `
+      ${context ? `历史上下文：${context}` : ''}
+      用户当前输入：${userQuestion}
+    `;
+
+    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -21,48 +41,25 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         model: 'deepseek-chat',
         messages: [
-          {
-            role: 'system',
-            content: `你是一个基于“热力学决策场论”的决策分析系统。
-            
-            核心任务：
-            1. 计算 Entropy (熵), Activation (激活能), Stability (稳定性)。
-            2. 计算【推荐指数】(Probability Score, 0-100)。
-               - 0-40: 红色高危。
-               - 40-75: 黄色观望。
-               - 75-100: 绿色推荐。
-
-            **重要处理逻辑**：
-            - 如果用户输入的信息缺失（例如只填了现状，没填选项），**不要拒绝回答**。
-            - 必须基于现有信息进行模糊推演，但在【结论】和【建议】中明确指出“数据不足导致精度下降”。
-            - **在 suggeston 字段中，必须针对缺失的部分提出具体的追问**（例如：“为了更精准，请告诉我你的备选方案是什么？”）。
-
-            请输出纯 JSON 格式：
-            {
-              "entropy": 0-100,
-              "activation": 0-100,
-              "stability": 0-100,
-              "probability_score": 0-100,
-              "probability_desc": "一句话评价 (例如：信息不全，暂定为高风险观望状态)",
-              "conclusion": "诊断结论 (如果信息缺，请强调模型处于‘欠拟合’状态)",
-              "theory_support": "物理学依据",
-              "suggestion": "行动策略 + 缺失信息追问"
-            }`
-          },
-          { role: 'user', content: userContent }
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
         ],
-        stream: false
-      })
+        temperature: 0.7,
+        response_format: { type: 'json_object' }
+      }),
     });
 
-    if (!response.ok) throw new Error('DeepSeek API Error');
     const data = await response.json();
-    const content = data.choices[0].message.content.replace(/```json|```/g, '').trim();
     
-    return NextResponse.json(JSON.parse(content));
+    if (!data.choices || !data.choices[0].message.content) {
+      throw new Error('API response invalid');
+    }
 
-  } catch (error: any) {
-    console.error(error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const result = JSON.parse(data.choices[0].message.content);
+    return NextResponse.json(result);
+
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json({ error: 'Failed to process' }, { status: 500 });
   }
 }
