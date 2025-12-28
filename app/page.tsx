@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Fingerprint, RotateCcw, Activity, Zap, Shield, GitGraph, BookOpen, Send, X, Atom, Microscope, Layers, Cpu, Globe, Database, Search, ChevronRight, FileText, Sigma, Hash } from 'lucide-react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, PolarRadiusAxis } from 'recharts';
+// 移除了可能导致报错的生僻图标，保留最稳健的基础图标
+import { Fingerprint, RotateCcw, Activity, Zap, Shield, GitGraph, BookOpen, Send, X, Atom, Microscope, Layers, Cpu, Globe, Search, ChevronRight, FileText } from 'lucide-react';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, PolarRadiusAxis, RadarProps } from 'recharts';
 
 // --- 组件：高亮粒子星空 ---
 const Starfield = () => {
@@ -43,6 +44,7 @@ const Starfield = () => {
         if (p.y > height) p.y = 0;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        // 注意：这里使用了反引号
         ctx.fillStyle = `rgba(103, 232, 249, ${p.alpha})`;
         ctx.fill();
       });
@@ -72,6 +74,7 @@ export default function EntropyPage() {
   const [q2, setQ2] = useState('');
   const [q3, setQ3] = useState('');
   const [supplement, setSupplement] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [historyContext, setHistoryContext] = useState('');
 
   useEffect(() => { setMounted(true); }, []);
@@ -98,7 +101,8 @@ export default function EntropyPage() {
   const submitSupplement = async () => {
     if (!supplement.trim()) return;
     setStatus('analyzing');
-    await fetchAnalysis(supplement, historyContext);
+    // 注意：这里使用 historyContext 可能会有闭包问题，简化处理
+    await fetchAnalysis(supplement, `【现状】：${q1}\n【选项】：${q2}\n【边界】：${q3}`);
     setSupplement('');
   };
 
@@ -115,7 +119,8 @@ export default function EntropyPage() {
       setResult(data);
       setStatus('result');
     } catch (error) {
-      alert("⚠️ 连接中断：无法连接至推演中枢。");
+      console.error(error);
+      alert("⚠️ 连接中断：无法连接至推演中枢。请检查网络或 API Key。");
       setStatus('idle');
     }
   };
@@ -143,7 +148,7 @@ export default function EntropyPage() {
       
       {/* 左上角 HUD */}
       <div className="absolute top-6 left-8 text-[10px] text-cyan-800 flex flex-col gap-2 z-0 pointer-events-none select-none hidden md:flex font-mono font-bold tracking-widest">
-        <span className="flex items-center gap-2"><Globe size={12}/> TDFT-SYSTEM v5.6 MOBILE-OPTIMIZED</span>
+        <span className="flex items-center gap-2"><Globe size={12}/> TDFT-SYSTEM v5.8 STABLE</span>
         <span className="flex items-center gap-2"><Cpu size={12}/> CORE: ONLINE</span>
       </div>
 
@@ -155,7 +160,7 @@ export default function EntropyPage() {
         <BookOpen size={14}/> 系统原理
       </button>
 
-      {/* --- 理论说明书弹窗 --- */}
+      {/* --- 理论说明书弹窗 (修复版) --- */}
       <AnimatePresence>
         {showManual && (
           <motion.div 
@@ -177,7 +182,7 @@ export default function EntropyPage() {
                         <h2 className="text-xl font-bold text-white tracking-widest font-sans">
                         热力学决策场论 (TDFT)
                         </h2>
-                        <p className="text-xs text-zinc-500 font-mono tracking-wider mt-1">DOC. REF: TDFT-2025-WP-ALPHA</p>
+                        <p className="text-xs text-zinc-500 font-mono tracking-wider mt-1">DOC. REF: TDFT-2025-WP-STABLE</p>
                     </div>
                 </div>
                 <button onClick={() => setShowManual(false)} className="text-zinc-500 hover:text-white p-2 hover:bg-white/5 rounded-full transition-colors"><X size={24}/></button>
@@ -195,7 +200,7 @@ export default function EntropyPage() {
 
                 <div className="bg-zinc-900/40 border-l-4 border-cyan-500 p-8 rounded-r-xl mb-16">
                     <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <Hash size={14}/> Abstract // 摘要
+                         Abstract // 摘要
                     </h3>
                     <p className="text-lg text-gray-300 leading-9 text-justify">
                         传统决策模型（如期望效用理论、SWOT分析）通常基于线性假设和静态环境，难以有效处理高熵环境下的非线性动态博弈。本文提出了一种基于复杂系统科学的新型决策框架——<strong>热力学决策场论（TDFT）</strong>。该理论建立在物理学与决策科学的同构性之上，将决策过程建模为相空间中的能量跃迁过程。通过引入<strong>信息熵 (S)</strong>、<strong>激活能 (Ea)</strong> 和 <strong>鲁棒性 (R)</strong> 三个核心序参量，定量描述决策系统的混乱度、势能壁垒及抗扰动能力。模型推演表明，最优决策路径实际上是在多维势能面上寻找局部熵减解与吉布斯自由能最小化的过程。
@@ -306,76 +311,70 @@ export default function EntropyPage() {
             <div className="text-center space-y-6 relative">
               <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none"></div>
               
-              {/* 标题优化：
-                  1. text-4xl (手机) -> md:text-7xl (电脑) 避免换行
-                  2. 渐变色 to-cyan-500 (提亮)
-                  3. drop-shadow 增强，解决背景不清问题
-              */}
-              <h1 className="text-4xl md:text-7xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-200 to-cyan-500 drop-shadow-[0_0_25px_rgba(6,182,212,0.6)] font-sans px-2 leading-tight">
+              <h1 className="text-4xl md:text-7xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-cyan-300 drop-shadow-[0_0_35px_rgba(34,211,238,0.8)] font-sans px-2 leading-tight">
                 热力学决策场论
               </h1>
-              <div className="flex items-center justify-center gap-4 md:gap-6 text-xs md:text-base tracking-[0.5em] text-cyan-500 font-bold uppercase opacity-90">
+              <div className="flex items-center justify-center gap-4 md:gap-6 text-xs md:text-base tracking-[0.5em] text-cyan-400 font-bold uppercase opacity-90">
                  <span>复杂系统</span>
-                 <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></span>
+                 <span className="w-1.5 h-1.5 bg-cyan-200 rounded-full animate-pulse"></span>
                  <span>动力学推演</span>
               </div>
             </div>
 
             <div className="w-full space-y-6 px-4 md:px-0">
               
-              {/* 输入框 1 (青色呼吸) */}
+              {/* 输入框 1 */}
               <div className="relative group w-full">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
-                <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-cyan-500/30 group-focus-within:border-cyan-400 group-focus-within:bg-cyan-950/20">
-                    {/* 标签宽度适配：手机 w-20，电脑 w-40 */}
-                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-cyan-500 tracking-wider group-focus-within:text-cyan-400 transition-colors shrink-0">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
+                <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-cyan-400/50 group-focus-within:border-cyan-300 group-focus-within:bg-cyan-950/20">
+                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-cyan-400 tracking-wider group-focus-within:text-cyan-200 transition-colors shrink-0">
                         初始状态
                     </div>
                     <input
                       type="text"
                       value={q1} onChange={(e) => setQ1(e.target.value)}
                       placeholder="困境、焦虑或现状..."
-                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-600 outline-none font-sans h-full tracking-wide min-w-0"
+                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-500 outline-none font-sans h-full tracking-wide min-w-0 font-medium"
                     />
-                    <div className="pr-4 text-cyan-800 opacity-30 group-focus-within:opacity-100 group-focus-within:text-cyan-400 transition-all hidden md:block">
+                    <div className="pr-4 text-cyan-400 opacity-50 group-focus-within:opacity-100 group-focus-within:text-cyan-300 transition-all hidden md:block">
                         <Layers size={20}/>
                     </div>
                 </div>
               </div>
 
-              {/* 输入框 2 (紫色呼吸) */}
+              {/* 输入框 2 */}
               <div className="relative group w-full">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
-                <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-purple-500/30 group-focus-within:border-purple-400 group-focus-within:bg-purple-950/20">
-                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-purple-500 tracking-wider group-focus-within:text-purple-400 transition-colors shrink-0">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
+                <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-purple-400/50 group-focus-within:border-purple-300 group-focus-within:bg-purple-950/20">
+                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-purple-400 tracking-wider group-focus-within:text-purple-200 transition-colors shrink-0">
                         决策变量
                     </div>
                     <input
                       type="text"
                       value={q2} onChange={(e) => setQ2(e.target.value)}
                       placeholder="方案A、方案B... (选填)"
-                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-600 outline-none font-sans h-full tracking-wide min-w-0"
+                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-500 outline-none font-sans h-full tracking-wide min-w-0 font-medium"
                     />
-                    <div className="pr-4 text-purple-800 opacity-30 group-focus-within:opacity-100 group-focus-within:text-purple-400 transition-all hidden md:block">
+                    <div className="pr-4 text-purple-400 opacity-50 group-focus-within:opacity-100 group-focus-within:text-purple-300 transition-all hidden md:block">
                         <GitGraph size={20}/>
                     </div>
                 </div>
               </div>
 
-              {/* 输入框 3 (绿色呼吸) */}
+              {/* 输入框 3 */}
               <div className="relative group w-full">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
-                <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-emerald-500/30 group-focus-within:border-emerald-400 group-focus-within:bg-emerald-950/20">
-                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-emerald-500 tracking-wider group-focus-within:text-emerald-400 transition-colors shrink-0">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-400 to-green-400 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
+                <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-emerald-400/50 group-focus-within:border-emerald-300 group-focus-within:bg-emerald-950/20">
+                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-emerald-400 tracking-wider group-focus-within:text-emerald-200 transition-colors shrink-0">
                         系统约束
                     </div>
                     <input
                       type="text"
                       value={q3} onChange={(e) => setQ3(e.target.value)}
                       placeholder="底线、最坏打算... (选填)"
-                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-600 outline-none font-sans h-full tracking-wide min-w-0"
+                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-500 outline-none font-sans h-full tracking-wide min-w-0 font-medium"
                     />
-                    <div className="pr-4 text-emerald-800 opacity-30 group-focus-within:opacity-100 group-focus-within:text-emerald-400 transition-all hidden md:block">
+                    <div className="pr-4 text-emerald-400 opacity-50 group-focus-within:opacity-100 group-focus-within:text-emerald-300 transition-all hidden md:block">
                         <Shield size={20}/>
                     </div>
                 </div>
