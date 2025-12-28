@@ -143,7 +143,7 @@ export default function EntropyPage() {
       
       {/* 左上角 HUD */}
       <div className="absolute top-6 left-8 text-[10px] text-cyan-800 flex flex-col gap-2 z-0 pointer-events-none select-none hidden md:flex font-mono font-bold tracking-widest">
-        <span className="flex items-center gap-2"><Globe size={12}/> TDFT-SYSTEM v5.5 PROFESSIONAL</span>
+        <span className="flex items-center gap-2"><Globe size={12}/> TDFT-SYSTEM v5.6 MOBILE-OPTIMIZED</span>
         <span className="flex items-center gap-2"><Cpu size={12}/> CORE: ONLINE</span>
       </div>
 
@@ -155,7 +155,7 @@ export default function EntropyPage() {
         <BookOpen size={14}/> 系统原理
       </button>
 
-      {/* --- 理论说明书弹窗 (完整学术论文版) --- */}
+      {/* --- 理论说明书弹窗 --- */}
       <AnimatePresence>
         {showManual && (
           <motion.div 
@@ -168,7 +168,6 @@ export default function EntropyPage() {
               className="bg-[#080808] border border-cyan-900/30 w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-xl shadow-[0_0_60px_rgba(6,182,212,0.15)] custom-scrollbar flex flex-col"
               onClick={e => e.stopPropagation()}
             >
-              {/* Header */}
               <div className="sticky top-0 z-10 bg-[#080808]/95 backdrop-blur border-b border-white/5 p-8 flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-cyan-900/20 rounded border border-cyan-500/30">
@@ -184,10 +183,7 @@ export default function EntropyPage() {
                 <button onClick={() => setShowManual(false)} className="text-zinc-500 hover:text-white p-2 hover:bg-white/5 rounded-full transition-colors"><X size={24}/></button>
               </div>
               
-              {/* --- 论文正文 --- */}
               <div className="p-10 md:p-16 text-gray-300 font-sans selection:bg-cyan-500/30">
-                
-                {/* 论文标题 */}
                 <div className="text-center mb-16 border-b border-white/5 pb-10">
                     <h1 className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight leading-tight">
                         不确定性环境下人类战略决策的<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">非平衡相变模型</span>
@@ -197,7 +193,6 @@ export default function EntropyPage() {
                     </p>
                 </div>
 
-                {/* 摘要 (Abstract) */}
                 <div className="bg-zinc-900/40 border-l-4 border-cyan-500 p-8 rounded-r-xl mb-16">
                     <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                         <Hash size={14}/> Abstract // 摘要
@@ -207,10 +202,7 @@ export default function EntropyPage() {
                     </p>
                 </div>
 
-                {/* 正文内容 */}
                 <div className="space-y-16 max-w-4xl mx-auto">
-                    
-                    {/* 1. 引言 */}
                     <section>
                         <h3 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
                             <span className="text-cyan-500/50 font-mono">01.</span> 引言 (Introduction)
@@ -222,13 +214,11 @@ export default function EntropyPage() {
                         </p>
                     </section>
 
-                    {/* 2. 理论框架 */}
                     <section>
                         <h3 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
                             <span className="text-cyan-500/50 font-mono">02.</span> 理论框架 (Theoretical Framework)
                         </h3>
                         
-                        {/* 定律 1 */}
                         <div className="mb-10">
                             <h4 className="text-xl font-bold text-cyan-400 mb-4 flex items-center gap-2">
                                 <GitGraph size={20}/> 第一定律：决策熵与信息不确定性
@@ -244,7 +234,6 @@ export default function EntropyPage() {
                             </p>
                         </div>
 
-                        {/* 定律 2 */}
                         <div className="mb-10">
                             <h4 className="text-xl font-bold text-yellow-400 mb-4 flex items-center gap-2">
                                 <Zap size={20}/> 第二定律：激活能与势能壁垒
@@ -258,7 +247,6 @@ export default function EntropyPage() {
                             </p>
                         </div>
 
-                        {/* 定律 3 */}
                         <div className="mb-10">
                             <h4 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
                                 <Shield size={20}/> 第三定律：鲁棒性与李雅普诺夫稳定性
@@ -273,7 +261,6 @@ export default function EntropyPage() {
                         </div>
                     </section>
 
-                    {/* 3. 算法模型 */}
                     <section>
                         <h3 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
                             <span className="text-cyan-500/50 font-mono">03.</span> 映射机制 (Mapping Mechanism)
@@ -288,7 +275,6 @@ export default function EntropyPage() {
                         </ul>
                     </section>
 
-                    {/* 结论 */}
                     <div className="border-t border-zinc-800 pt-10 mt-10">
                         <h4 className="text-sm text-zinc-500 uppercase tracking-widest mb-4">Conclusion // 结论</h4>
                         <p className="text-xl text-gray-200 font-medium leading-9">
@@ -299,7 +285,6 @@ export default function EntropyPage() {
                 </div>
               </div>
               
-              {/* Footer */}
               <div className="sticky bottom-0 bg-[#050505]/95 backdrop-blur p-6 border-t border-white/10 text-center">
                 <button onClick={() => setShowManual(false)} className="px-16 py-4 bg-cyan-900/30 hover:bg-cyan-800/50 text-cyan-200 rounded-lg font-bold transition-all text-sm tracking-[0.2em] border border-cyan-700/30 hover:border-cyan-500/50 shadow-lg">
                   关闭档案 (CLOSE)
@@ -316,39 +301,43 @@ export default function EntropyPage() {
           <motion.div 
             key="idle"
             initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
-            className="z-10 w-full max-w-4xl flex flex-col items-center gap-12 py-12"
+            className="z-10 w-full max-w-4xl flex flex-col items-center gap-12 py-12 px-2"
           >
             <div className="text-center space-y-6 relative">
               <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none"></div>
               
-              <h1 className="text-5xl md:text-7xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-cyan-900 drop-shadow-[0_0_40px_rgba(6,182,212,0.4)] font-sans">
+              {/* 标题优化：
+                  1. text-4xl (手机) -> md:text-7xl (电脑) 避免换行
+                  2. 渐变色 to-cyan-500 (提亮)
+                  3. drop-shadow 增强，解决背景不清问题
+              */}
+              <h1 className="text-4xl md:text-7xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-200 to-cyan-500 drop-shadow-[0_0_25px_rgba(6,182,212,0.6)] font-sans px-2 leading-tight">
                 热力学决策场论
               </h1>
-              <div className="flex items-center justify-center gap-6 text-sm md:text-base tracking-[0.5em] text-cyan-600 font-bold uppercase opacity-90">
+              <div className="flex items-center justify-center gap-4 md:gap-6 text-xs md:text-base tracking-[0.5em] text-cyan-500 font-bold uppercase opacity-90">
                  <span>复杂系统</span>
                  <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></span>
                  <span>动力学推演</span>
               </div>
             </div>
 
-            <div className="w-full space-y-6 px-6 md:px-0">
+            <div className="w-full space-y-6 px-4 md:px-0">
               
               {/* 输入框 1 (青色呼吸) */}
               <div className="relative group w-full">
-                {/* 呼吸灯光晕层 */}
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
-                
                 <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-cyan-500/30 group-focus-within:border-cyan-400 group-focus-within:bg-cyan-950/20">
-                    <div className="h-full w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-sm font-bold text-cyan-500 tracking-wider group-focus-within:text-cyan-400 transition-colors">
+                    {/* 标签宽度适配：手机 w-20，电脑 w-40 */}
+                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-cyan-500 tracking-wider group-focus-within:text-cyan-400 transition-colors shrink-0">
                         初始状态
                     </div>
                     <input
                       type="text"
                       value={q1} onChange={(e) => setQ1(e.target.value)}
-                      placeholder="描述你当前的困境、焦虑或现状..."
-                      className="flex-grow bg-transparent px-6 text-base text-white placeholder:text-zinc-600 outline-none font-sans h-full tracking-wide"
+                      placeholder="困境、焦虑或现状..."
+                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-600 outline-none font-sans h-full tracking-wide min-w-0"
                     />
-                    <div className="pr-4 text-cyan-800 opacity-30 group-focus-within:opacity-100 group-focus-within:text-cyan-400 transition-all">
+                    <div className="pr-4 text-cyan-800 opacity-30 group-focus-within:opacity-100 group-focus-within:text-cyan-400 transition-all hidden md:block">
                         <Layers size={20}/>
                     </div>
                 </div>
@@ -357,18 +346,17 @@ export default function EntropyPage() {
               {/* 输入框 2 (紫色呼吸) */}
               <div className="relative group w-full">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
-
                 <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-purple-500/30 group-focus-within:border-purple-400 group-focus-within:bg-purple-950/20">
-                    <div className="h-full w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-sm font-bold text-purple-500 tracking-wider group-focus-within:text-purple-400 transition-colors">
+                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-purple-500 tracking-wider group-focus-within:text-purple-400 transition-colors shrink-0">
                         决策变量
                     </div>
                     <input
                       type="text"
                       value={q2} onChange={(e) => setQ2(e.target.value)}
-                      placeholder="方案A、方案B、待定选项... (选填)"
-                      className="flex-grow bg-transparent px-6 text-base text-white placeholder:text-zinc-600 outline-none font-sans h-full tracking-wide"
+                      placeholder="方案A、方案B... (选填)"
+                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-600 outline-none font-sans h-full tracking-wide min-w-0"
                     />
-                    <div className="pr-4 text-purple-800 opacity-30 group-focus-within:opacity-100 group-focus-within:text-purple-400 transition-all">
+                    <div className="pr-4 text-purple-800 opacity-30 group-focus-within:opacity-100 group-focus-within:text-purple-400 transition-all hidden md:block">
                         <GitGraph size={20}/>
                     </div>
                 </div>
@@ -377,18 +365,17 @@ export default function EntropyPage() {
               {/* 输入框 3 (绿色呼吸) */}
               <div className="relative group w-full">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg opacity-0 group-focus-within:opacity-75 transition duration-1000 blur-md group-focus-within:animate-pulse"></div>
-
                 <div className="relative bg-[#080808]/90 border border-zinc-800 p-0 flex items-center h-14 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-emerald-500/30 group-focus-within:border-emerald-400 group-focus-within:bg-emerald-950/20">
-                    <div className="h-full w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-sm font-bold text-emerald-500 tracking-wider group-focus-within:text-emerald-400 transition-colors">
+                    <div className="h-full w-20 md:w-40 bg-zinc-900/50 border-r border-zinc-800 flex items-center justify-center text-xs md:text-sm font-bold text-emerald-500 tracking-wider group-focus-within:text-emerald-400 transition-colors shrink-0">
                         系统约束
                     </div>
                     <input
                       type="text"
                       value={q3} onChange={(e) => setQ3(e.target.value)}
-                      placeholder="底线、最坏打算、财务约束... (选填)"
-                      className="flex-grow bg-transparent px-6 text-base text-white placeholder:text-zinc-600 outline-none font-sans h-full tracking-wide"
+                      placeholder="底线、最坏打算... (选填)"
+                      className="flex-grow bg-transparent px-4 md:px-6 text-sm md:text-base text-white placeholder:text-zinc-600 outline-none font-sans h-full tracking-wide min-w-0"
                     />
-                    <div className="pr-4 text-emerald-800 opacity-30 group-focus-within:opacity-100 group-focus-within:text-emerald-400 transition-all">
+                    <div className="pr-4 text-emerald-800 opacity-30 group-focus-within:opacity-100 group-focus-within:text-emerald-400 transition-all hidden md:block">
                         <Shield size={20}/>
                     </div>
                 </div>
@@ -415,7 +402,7 @@ export default function EntropyPage() {
           <motion.div
             key="analyzing"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="z-10 text-center flex flex-col items-center justify-center h-full"
+            className="z-10 text-center flex flex-col items-center justify-center h-full px-4"
           >
              <div className="relative w-48 h-48">
               <div className="absolute inset-0 border border-cyan-900/50 rounded-full"></div>
@@ -472,7 +459,6 @@ export default function EntropyPage() {
                     />
                  </div>
                  
-                 {/* 图例说明：字体加大 (text-xs) */}
                  <div className="flex justify-between text-xs text-zinc-400 mb-4 font-mono tracking-wider">
                     <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-500 shadow-red-500/50 shadow-sm"/> 0-40% 劝退</span>
                     <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-cyan-500 shadow-cyan-500/50 shadow-sm"/> 40-75% 观望</span>
@@ -492,7 +478,7 @@ export default function EntropyPage() {
                  <h3 className="text-xs text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2 font-bold">
                     <Activity size={14}/> 模型诊断结论
                  </h3>
-                 <p className="text-2xl text-white font-bold tracking-wide leading-relaxed">
+                 <p className="text-lg md:text-2xl text-white font-bold tracking-wide leading-relaxed">
                    {result.conclusion}
                  </p>
               </div>
@@ -527,7 +513,7 @@ export default function EntropyPage() {
                     type="text" 
                     value={supplement}
                     onChange={(e) => setSupplement(e.target.value)}
-                    placeholder="输入修正参数以校准模型 (例如：资金已到位)..."
+                    placeholder="输入修正参数以校准模型..."
                     className="flex-grow bg-transparent p-4 text-sm text-white outline-none font-mono placeholder:text-zinc-600"
                     onKeyDown={(e) => e.key === 'Enter' && submitSupplement()}
                   />
